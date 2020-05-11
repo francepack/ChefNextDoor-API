@@ -1,11 +1,13 @@
 module Api
   module V1
     class DishesController < ApplicationController
+      before_action :authorize_access_request!
+
       before_action :set_dish, only: [:show, :update, :destroy]
 
       # GET /dishes
       def index
-        @dishes = Dish.all
+        @dishes = current_user.dishes.all
 
         render json: @dishes
       end
@@ -17,7 +19,7 @@ module Api
 
       # POST /dishes
       def create
-        @dish = Dish.new(dish_params)
+        @dish = current_user.dishes.build(dish_params)
 
         if @dish.save
           render json: @dish, status: :created, location: @dish
@@ -43,7 +45,7 @@ module Api
       private
         # Use callbacks to share common setup or constraints between actions.
         def set_dish
-          @dish = Dish.find(params[:id])
+          @dish = current_user.dishes.find(params[:id])
         end
 
         # Only allow a trusted parameter "white list" through.
